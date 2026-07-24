@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Insta Tracker</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Insta Tracker</h1>
+    <p class="subtitle">Comptes que tu suis mais qui ne te suivent pas en retour</p>
+
+    <div class="actions">
+      <button id="sync-btn">🔄 Synchroniser maintenant</button>
+      <span id="status"></span>
+    </div>
+
+    <table id="results">
+      <thead>
+        <tr>
+          <th>Pseudo</th>
+          <th>Nom</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="results-body"></tbody>
+    </table>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

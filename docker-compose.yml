@@ -1,0 +1,19 @@
+# --- docker-compose.yml ---
+# docker-compose sert à décrire "quels containers je veux, et comment ils
+# communiquent/partagent des données", pour ne pas avoir à taper des
+# commandes "docker run" à rallonge à chaque fois.
+
+services:
+  backend:
+    build: .              # Construit l'image à partir du Dockerfile ici
+    container_name: insta-tracker
+    ports:
+      - "8000:8000"        # host:container -> accessible sur http://localhost:8000
+    volumes:
+      # On monte le dossier ./data dans le container.
+      # Sans ça, la base SQLite et la session Instagram seraient perdues
+      # à chaque fois qu'on reconstruit le container.
+      - ./data:/app/data
+    env_file:
+      - .env               # Contient tes identifiants Instagram (jamais commit ce fichier)
+    restart: unless-stopped
