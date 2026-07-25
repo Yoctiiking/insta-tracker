@@ -22,3 +22,7 @@ services:
     env_file:
       - .env               # Contient tes identifiants Instagram (jamais commit ce fichier)
     restart: unless-stopped
+    depends_on:
+      - redis
+  redis:
+    image: redis:alpine
