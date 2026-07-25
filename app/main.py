@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, Response
 import requests
+import redis
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List
@@ -15,7 +16,7 @@ from .scraper import get_client, fetch_followers_and_following, compute_non_mutu
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Insta Tracker")
-
+r = redis.Redis(host="redis", port=6379)
 
 @app.get("/api/health")
 def health():
@@ -136,6 +137,9 @@ def proxy_image(url: str):
     contrairement au navigateur) et la renvoie au frontend comme si elle
     venait de notre propre domaine.
     """
+    cached = r.get(url)
+    if cached is not None:
+        return Response(content=cached, media_type="image/jpeg")
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                       "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -146,9 +150,10 @@ def proxy_image(url: str):
         resp.raise_for_status()
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Impossible de charger l'image: {e}")
+    r.setex(url, 86400, resp.content)  # cache pendant 24h (86400 secondes)
     return Response(content=resp.content, media_type=resp.headers.get("content-type", "image/jpeg"))
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 def serve_index():
