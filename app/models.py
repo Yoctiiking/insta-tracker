@@ -30,5 +30,6 @@ class Relation(Base):
     full_name = Column(String, nullable=True)
     is_follower = Column(Boolean, default=False)   # cette personne te suit
     is_following = Column(Boolean, default=False)  # tu suis cette personne
+    profile_pic_url = Column(String, nullable=True)
 
     snapshot = relationship("Snapshot", back_populates="relations")

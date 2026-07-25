@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
+import requests
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List
@@ -48,6 +49,7 @@ def sync(db: Session = Depends(get_db)):
             full_name=user.full_name,
             is_follower=uid in follower_ids,
             is_following=True,
+            profile_pic_url=str(user.profile_pic_url) if user.profile_pic_url else None,
         ))
     # Ajoute aussi les followers qui ne sont pas suivis en retour par toi
     following_ids = set(following.keys())
@@ -59,6 +61,7 @@ def sync(db: Session = Depends(get_db)):
                 full_name=user.full_name,
                 is_follower=True,
                 is_following=False,
+                profile_pic_url=str(user.profile_pic_url) if user.profile_pic_url else None,
             ))
 
     db.commit()
@@ -109,6 +112,24 @@ def unfollow_one(username: str, db: Session = Depends(get_db)):
 
 
 # Sert le frontend statique (index.html, app.js, style.css)
+@app.get("/api/proxy-image")
+def proxy_image(url: str):
+    """
+    Récupère une image côté serveur (pas de restriction cross-origin ici,
+    contrairement au navigateur) et la renvoie au frontend comme si elle
+    venait de notre propre domaine.
+    """
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/120.0.0.0 Safari/537.36"
+    }
+    try:
+        resp = requests.get(url, headers=headers, timeout=5)
+        resp.raise_for_status()
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Impossible de charger l'image: {e}")
+    return Response(content=resp.content, media_type=resp.headers.get("content-type", "image/jpeg"))
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 

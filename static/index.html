@@ -2,29 +2,60 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Insta Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Insta Tracker — Registre</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%2312201D'/%3E%3Ccircle cx='20' cy='20' r='12' fill='none' stroke='%23C9A227' stroke-width='2.5'/%3E%3Cpath d='M20 13v7l5 4' stroke='%23C9A227' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Insta Tracker</h1>
-    <p class="subtitle">Comptes que tu suis mais qui ne te suivent pas en retour</p>
+  <div class="ledger">
+    <header class="ledger-head">
+      <div class="seal" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34">
+          <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="20" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="1"/>
+          <path d="M20 12v9l6 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <p class="eyebrow">Registre privé — audit des abonnements</p>
+      <h1>Qui n'est pas sur la liste</h1>
+      <p class="subtitle">Les comptes que tu suis, mais qui ne t'ont pas rendu la politesse.</p>
+    </header>
 
-    <div class="actions">
-      <button id="sync-btn">🔄 Synchroniser maintenant</button>
-      <span id="status"></span>
+    <div class="control-strip">
+      <button id="sync-btn" class="brass-button">
+        <span class="button-icon" aria-hidden="true">&#8635;</span>
+        Lancer l'audit
+      </button>
+      <label class="search-box">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <input id="search-input" type="search" class="search-input" placeholder="Filtrer par pseudo ou nom..." autocomplete="off">
+      </label>
+      <span id="status" class="status-line"></span>
     </div>
 
-    <table id="results">
-      <thead>
-        <tr>
-          <th>Pseudo</th>
-          <th>Nom</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="results-body"></tbody>
-    </table>
+    <div class="table-wrap">
+      <table id="results">
+        <thead>
+          <tr>
+            <th class="col-photo"></th>
+            <th>Pseudo</th>
+            <th>Nom</th>
+            <th class="col-action">Action</th>
+          </tr>
+        </thead>
+        <tbody id="results-body">
+          <tr class="empty-row">
+            <td colspan="4">Le registre est vide. Lance l'audit pour voir qui manque à l'appel.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <script src="/static/app.js"></script>

@@ -8,6 +8,7 @@ class RelationOut(BaseModel):
     full_name: Optional[str] = None
     is_follower: bool
     is_following: bool
+    profile_pic_url: Optional[str] = None
 
     class Config:
         from_attributes = True
