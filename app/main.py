@@ -108,6 +108,23 @@ def unfollow_one(username: str, db: Session = Depends(get_db)):
         unfollow_users(cl, [user_id])
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Erreur Instagram: {e}")
+
+    # Met à jour le dernier snapshot pour que ce compte ne réapparaisse pas
+    # dans /api/non-mutual tant qu'un nouvel audit n'a pas été relancé.
+    latest = db.query(models.Snapshot).order_by(desc(models.Snapshot.created_at)).first()
+    if latest:
+        relation = (
+            db.query(models.Relation)
+            .filter(
+                models.Relation.snapshot_id == latest.id,
+                models.Relation.username == username,
+            )
+            .first()
+        )
+        if relation:
+            relation.is_following = False
+            db.commit()
+
     return {"unfollowed": username}
 
 

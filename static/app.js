@@ -2,6 +2,8 @@ const syncBtn = document.getElementById("sync-btn");
 const statusEl = document.getElementById("status");
 const searchInput = document.getElementById("search-input");
 const tbody = document.getElementById("results-body");
+const followersCountEl = document.getElementById("followers-count");
+const followingCountEl = document.getElementById("following-count");
 
 // Dernières données reçues de l'API, indépendamment de ce qui est filtré/affiché
 let currentData = [];
@@ -69,6 +71,31 @@ function applyFilter() {
   renderRows(filtered);
 }
 
+function updateCounts(followers, following) {
+  followersCountEl.textContent = followers ?? "—";
+  followingCountEl.textContent = following ?? "—";
+}
+
+// Fait -1 sur le compteur "Abonnements" affiché, sans requête serveur
+function decrementFollowingCount() {
+  const current = parseInt(followingCountEl.textContent, 10);
+  if (!Number.isNaN(current)) {
+    followingCountEl.textContent = current - 1;
+  }
+}
+
+async function loadLatestCounts() {
+  try {
+    const res = await fetch("/api/snapshots");
+    if (!res.ok) return;
+    const snapshots = await res.json();
+    if (snapshots.length === 0) return;
+    updateCounts(snapshots[0].followers_count, snapshots[0].following_count);
+  } catch (e) {
+    // Silencieux : les compteurs restent affichés à "—"
+  }
+}
+
 async function loadNonMutual() {
   const res = await fetch("/api/non-mutual");
   if (!res.ok) {
@@ -89,6 +116,7 @@ async function syncNow() {
     const data = await res.json();
     statusEl.textContent = `${data.non_mutual_count} comptes non réciproques`;
     statusEl.classList.add("is-success");
+    updateCounts(data.followers_count, data.following_count);
     await loadNonMutual();
   } catch (e) {
     statusEl.textContent = "L'audit a échoué. Réessaie.";
@@ -105,6 +133,7 @@ tbody.addEventListener("click", async (e) => {
     e.target.disabled = true;
     e.target.textContent = "...";
     await fetch(`/api/unfollow/${username}`, { method: "POST" });
+    decrementFollowingCount();
     currentData = currentData.filter((rel) => rel.username !== username);
     row.classList.add("leaving");
     row.addEventListener("animationend", () => {
@@ -119,3 +148,4 @@ tbody.addEventListener("click", async (e) => {
 syncBtn.addEventListener("click", syncNow);
 searchInput.addEventListener("input", applyFilter);
 loadNonMutual();
+loadLatestCounts();

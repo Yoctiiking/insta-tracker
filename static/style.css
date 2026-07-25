@@ -1,7 +1,7 @@
 :root {
   --ink: #EDE6D6;
   --ink-dim: #A9A190;
-  --bg: #12201D;
+  --bg: #0D1815;
   --bg-deep: #0C1614;
   --card: #1E332E;
   --card-alt: #23392F;
@@ -434,6 +434,70 @@ td:first-child a:focus-visible .avatar {
 
 tr.leaving {
   animation: dismiss 0.3s ease forwards;
+}
+
+/* ---------- Floating stats ---------- */
+
+.stats-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 40;
+}
+
+.stat-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 10px 16px;
+  box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.6);
+  animation: rise 0.5s ease both;
+}
+
+.stat-icon {
+  color: var(--brass);
+  flex-shrink: 0;
+}
+
+.stat-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--ink);
+  transition: color 0.2s ease;
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+@media (max-width: 560px) {
+  .stats-float {
+    right: 12px;
+    bottom: 12px;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .stat-box {
+    padding: 8px 12px;
+  }
 }
 
 /* ---------- Responsive ---------- */
